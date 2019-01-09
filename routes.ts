@@ -9,9 +9,11 @@ import * as asyncHandler from 'express-async-handler'
 app.post('/images', upload.single('image'), (req, res, next) => {
     // Create a new image model and fill the properties
     let newImage = new Image();
+    
     newImage.filename = req.file.filename;
     newImage.originalName = req.file.originalname;
-    newImage.desc = req.body.desc
+    newImage.desc = req.body.desc;
+    newImage.size = req.file.size;
     newImage.save(err => {
         if (err) {
             return res.sendStatus(400);
