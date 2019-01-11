@@ -22,6 +22,23 @@ app.post('/images', upload.single('image'), (req, res, next) => {
     });
 });
 
+// Upload multi images(max = 10) with one description
+app.post('/images/multi', upload.array('image', 10), (req, res, next) => {
+    // Create a new image model and fill the properties
+    console.log(req.files);
+    for (var i = 0; i < req.files.length; i++) {
+        let newImage = new Image();
+        
+        newImage.filename = req.files[i].filename;
+        console.log(newImage.filename);
+        newImage.originalName = req.files[i].originalname;
+        newImage.desc = req.body.desc;
+        newImage.size = req.files[i].size;
+        newImage.save();        
+    }
+    res.send('upload success.');    
+});
+
 // Get all uploaded images
 app.get('/images', asyncHandler(async (req, res, next) => {
     // use lean() to get a plain JS object
