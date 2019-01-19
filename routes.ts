@@ -61,28 +61,41 @@ app.get('/images', asyncHandler(async (req, res, next) => {
 app.get('/images/:id', (req, res, next) => {
     let imgId = req.params.id;
 
-    Image.findById(imgId, (err, image) => {
-        if (err) {
-            res.sendStatus(400);
-        }
+    // Image.findById(imgId, (err, image) => {
+    //     if (err) {
+    //         res.sendStatus(400);
+    //     }
         
-        // stream the image back by loading the file
-        res.setHeader('Content-Type', 'image/jpeg');
-        fs.createReadStream(path.join(UPLOAD_PATH, image.filename)).pipe(res);
-    })
+    //     // stream the image back by loading the file
+    //     res.setHeader('Content-Type', 'image/jpeg');
+    //     fs.createReadStream(path.join(UPLOAD_PATH, image.filename)).pipe(res);
+    // })
+
+    Image.findById(imgId)
+        .then((image) => {
+            res.setHeader('Content-Type', 'image/jpeg');
+            fs.createReadStream(path.join(UPLOAD_PATH, image.filename)).pipe(res);
+        })
+        .catch(err => res.status(404).json({ success: false }));
 });
 
 // Delete one image by its ID
 app.delete('/images/:id', (req, res, next) => {
     let imgId = req.params.id;
 
-    Image.findByIdAndRemove(imgId, (err, image) => {
-        if (err && image) {
-            res.sendStatus(400);
-        }
+    // Image.findByIdAndRemove(imgId, (err, image) => {
+    //     if (err && image) {
+    //         res.sendStatus(400);
+    //     }
 
-        del([path.join(UPLOAD_PATH, image.filename)]).then(deleted => {
-            res.sendStatus(200);
-        })
-    })
+    //     del([path.join(UPLOAD_PATH, image.filename)]).then(deleted => {
+    //         res.sendStatus(200);
+    //     })
+    // })
+
+    
+    //Image.findByIdAndRemove(imgId)
+    Image.findOneAndDelete(imgId)
+        .then((image) => {del([path.join(UPLOAD_PATH, image.filename)]).then(deleted => { res.sendStatus(200);})})
+        .catch(err => res.status(404).json({ success: false }));
 });
